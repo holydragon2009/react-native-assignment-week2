@@ -13,6 +13,9 @@ export const actionCreators = {
 }
 const initialState = {
   todos: ['Click to remove', 'Learn React Native', 'Write Code', 'Ship App'],
+  deals_filter: false,
+  radius_filter: 1,// The max value is 40000 meters (25 miles). 1 mile = 1609.34 meters
+  sort: 0  
 }
 
 export const reducer = (state = initialState, action) => {
