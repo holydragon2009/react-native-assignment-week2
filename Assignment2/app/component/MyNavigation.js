@@ -19,7 +19,7 @@ export default class MyNavigation extends Component {
   render() {
     return (
       <Navigator
-        initialRoute={{ id: "SearchPage", title: "SearchPage", index: 0 }}
+        initialRoute={{ id: "LoginPage", title: "LoginPage", index: 0 }}
         avigationBar={
           <Navigator.NavigationBar
             routeMapper={{
