@@ -61,7 +61,7 @@ class SearchPage extends Component{
           return response.json()
         })
         .then(json => {
-          console.log(json);
+        //   console.log(json);
           this.setState({
             accessToken: json.access_token,
             tokenType: json.token_type
@@ -115,33 +115,29 @@ class SearchPage extends Component{
         // this.loadMore();
     }
 
-    onChangeText = (text) => {
-      return new Promise((resolve, reject) => {
-          console.log('onChangeText text = ' + text);
-          this.onFilter(text);
-          resolve();
-      });
-    }
-
-    onFilter(text){
-      let filteredData = []
-      for (var i = 0; i < this.state.totalData.length; i++) {
-        if(this.isMatching(this.state.totalData[i], text)){
-          filteredData.push(this.state.totalData[i]);
-        }
-      }
-      // console.log('filter data = ' + JSON.stringify(filteredData))
+    _setSearchText(text){
+      this.setState({text: text});
+      let filteredData = this._filterNotes(text, this.state.totalData);
       this.setState({
         dataSource: ds.cloneWithRows(filteredData),
       });
     }
 
+    _filterNotes(searchText, notes) {
+      let newData = notes.slice();
+      let filteredData = []
+      for (var i = 0; i < newData.length; i++) {
+        if(this.isMatching(newData[i], searchText)){
+          filteredData.push(newData[i]);
+        }
+      }
+      return filteredData;
+    }
+
     isMatching(item, text){
       var searchText = text.toLowerCase();
-      var title = item.title.toLowerCase();
-      var desc = item.overview.toLowerCase();
-      // console.log('title.match(searchText) = ' + JSON.stringify(title.match(searchText)))
-      if(title.match(searchText) || desc.match(searchText)){
+      var name = item.name.toLowerCase();
+      if(name.match(searchText)){
         return true
       }
       return false
@@ -169,7 +165,7 @@ class SearchPage extends Component{
                     <SearchBar
                         ref='searchBar'
                         placeholder='Search'
-                        onChangeText={() => {}}
+                        onChangeText={(text) => this._setSearchText(text)}
                         onSearchButtonPress={() => {}}
                         onCancelButtonPress={() => {}}
                         barTintColor='red'
@@ -197,7 +193,7 @@ class SearchPage extends Component{
 class Place extends Component {
   constructor(props){
       super(props)
-      console.log('Place: ' + JSON.stringify(this.props.movie))
+    //   console.log('Place: ' + JSON.stringify(this.props.movie))
   }
 
   _onSelectMovie(movie){
