@@ -17,6 +17,9 @@ import SearchBar from 'react-native-search-bar';
 import ProgressBar from 'react-native-progress/Bar';
 // import SearchListView from './SearchListView';
 
+import { actionCreators } from '../redux/abcRedux'
+import { connect } from 'react-redux';
+
 const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 const { screenWidth, screenHeight } = Dimensions.get('window');
 
@@ -31,7 +34,8 @@ class SearchPage extends Component{
         totalData: null,
         text: '',
         accessToken: '',
-        tokenType: 'Bearer'
+        tokenType: 'Bearer',
+        filter_data: null,
       };
     }
 
@@ -41,6 +45,14 @@ class SearchPage extends Component{
       } else {
         this.fetchToken();
       }
+    }
+
+    componentWillReceiveProps(nextProps) {
+      console.log('SearchPage componentWillReceiveProps ' + nextProps)
+    }
+
+    componentWillUpdate(nextProps, nextState){
+      console.log('SearchPage componentWillUpdate ' + nextProps)
     }
 
     fetchToken() {
@@ -267,4 +279,9 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SearchPage
+const mapStateToProps = (state) => ({
+  filter_data: state.reducer.filter_data ? state.reducer.filter_data : null,
+})
+
+// export default SearchPage
+export default connect(mapStateToProps)(SearchPage)

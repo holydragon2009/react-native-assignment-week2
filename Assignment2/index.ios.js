@@ -13,10 +13,10 @@ import {
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 
-import { reducer } from './app/redux/abcRedux'
+import { appReducer } from './app/redux/abcRedux'
 import App from './app/containers/App'
 
-const store = createStore(reducer)
+const store = createStore(appReducer)
 const Assignment2 = () => (
   <Provider store={store}>
     <App />

@@ -6,26 +6,26 @@ import { actionCreators } from '../redux/abcRedux'
 
 import MyNavigation from '../component/MyNavigation'
 
-const mapStateToProps = (state) => ({
-  todos: state.todos,
-})
+// const mapStateToProps = (state) => ({
+//   todos: state.todos,
+// })
 
 class App extends Component {
 
-  onAddTodo = (text) => {
-    const {dispatch} = this.props
+  // onAddTodo = (text) => {
+  //   const {dispatch} = this.props
 
-    dispatch(actionCreators.add(text))
-  }
+  //   dispatch(actionCreators.add(text))
+  // }
 
-  onRemoveTodo = (index) => {
-    const {dispatch} = this.props
+  // onRemoveTodo = (index) => {
+  //   const {dispatch} = this.props
 
-    dispatch(actionCreators.remove(index))
-  }
+  //   dispatch(actionCreators.remove(index))
+  // }
 
   render() {
-    const {todos} = this.props
+    // const {todos} = this.props
 
     return (
         <MyNavigation />
@@ -33,4 +33,5 @@ class App extends Component {
   }
 }
 
-export default connect(mapStateToProps)(App)
+// export default connect(mapStateToProps)(App)
+export default App

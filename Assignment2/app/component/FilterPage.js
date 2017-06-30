@@ -5,6 +5,10 @@ import { Button, View, TouchableHighlight, Image, Text,
 import ModalDropdown from 'react-native-modal-dropdown';
 // import update from 'react-addons-update';
 
+import { actionCreators } from '../redux/abcRedux'
+import { connect } from 'react-redux';
+import update from 'react-addons-update';
+
 // const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 const ds = new ListView.DataSource({
 		rowHasChanged: (r1, r2) => r1 !== r2,
@@ -18,6 +22,7 @@ class FilterPage extends Component {
 		super(props);
 
 		this._updateListData = this._updateListData.bind(this);
+		this._onSwitchCategory = this._onSwitchCategory.bind(this);
 
 		this.state = {
 			onTouchBackAction: this.props.onTouchBackAction,
@@ -27,7 +32,8 @@ class FilterPage extends Component {
 			totalData: null,
 			text: '',
 			accessToken: '',
-			tokenType: 'Bearer'
+			tokenType: 'Bearer',
+			filterData: null,
 		};
 	}
 
@@ -64,7 +70,7 @@ class FilterPage extends Component {
 
 		this.setState({
 			dataSource: ds.cloneWithRowsAndSections(dataWithSection),
-			totalData: data,
+			totalData: dataWithSection,
 			screenWidth: screenWidth,
 		})
 		// this.setState({
@@ -95,7 +101,9 @@ class FilterPage extends Component {
 
 	renderItem(rowData, sectionID, rowID, navigator){
 		return (
-			<Category sectionID={sectionID} rowID={rowID} rowData={rowData} navigator={navigator} action={this._updateListData} />
+			<Category sectionID={sectionID} rowID={rowID} rowData={rowData} 
+				navigator={navigator} action={this._updateListData}
+				onCategorySwitch={this._onSwitchCategory} />
 		);
 	}
 
@@ -110,6 +118,16 @@ class FilterPage extends Component {
 			// this.loadMore();
 	}
 
+	_onTouchSearch = () => {
+		const {dispatch} = this.props
+		dispatch(actionCreators.search(this.state.totalData))
+
+		// this.props.route.callback(args);
+		// this.props.navigator && this.props.navigator.push({id:'FilterPage', passProps: {
+    //   movie: movie
+    // }})
+	}
+
 	_onTouchBack = () => {
 		if (this.state.onTouchBackAction) {
 			this.state.onTouchBackAction();
@@ -119,20 +137,47 @@ class FilterPage extends Component {
 	};
 
 	_updateListData(rowID, cellData){
-		const newData = this.state.totalData.slice();
-		newData[rowID] = cellData;
-		// console.log('_onSwitchCategoryValue value = ' + JSON.stringify(cellData.value) + " - rowID = " + rowID)
+		// const newData = this.state.totalData.slice();
+		// newData[rowID] = cellData;
+		// // console.log('_onSwitchCategoryValue value = ' + JSON.stringify(cellData.value) + " - rowID = " + rowID)
 		
-		this.setState({
-			dataSource: ds.cloneWithRows(newData),
-			totalData: newData
-		});
+		// this.setState({
+		// 	dataSource: ds.cloneWithRows(newData),
+		// 	totalData: newData
+		// });
+	}
+
+	_cloneTotalData(data){
+		return data.slice();
+	}
+
+	_onSwitchCategory(newValue, rowID){
+		// const newData = this._cloneTotalData(this.state.totalData);
+		// newData.category[rowID].value = true
+		// this.setState({
+		// 	totalData: newData
+		// })
+
+		// let newData = this.state.totalData
+		// newData.category[rowID].value = value
+		// this.setState({
+		// 	totalData: newData
+		// })
+
+		const newObj = update(this.state.totalData.category, {[rowID] : {value: {$set: true}}});
+		this.setState(prevState => ({
+			totalData: newObj,
+		}));
+		console.log(this.state.totalData.category)
+
+		// let newCellData = this.state.rowData
+		// newCellData.value = value
+		// this.props.action(rowID, newCellData);
 	}
 
 	render() {
 		return (
 			<View style={{ backgroundColor: "red"}}>
-				<TouchableHighlight onPress={this._onTouchBack}>
 					<View
 						style={{
 							marginTop: 20,
@@ -143,17 +188,20 @@ class FilterPage extends Component {
 							alignItems: "center"
 						}}
 					>
+					<TouchableHighlight onPress={this._onTouchBack}>
 						<Text style={{ paddingLeft: 10, width: 70, fontSize: 15, fontWeight: 'bold', color: 'white' }}>
 							Cancel
 						</Text>
+					</TouchableHighlight>
 						<Text style={{ paddingLeft: 10, width: 70, fontSize: 15, fontWeight: 'bold', color: 'white' }}>
 							Filter
 						</Text>
+					<TouchableHighlight onPress={this._onTouchSearch}>
 						<Text style={{ paddingLeft: 10, width: 70, fontSize: 15, fontWeight: 'bold', color: 'white' }}>
 							Search
 						</Text>
+					</TouchableHighlight>
 					</View>
-				</TouchableHighlight>
 				 <ListView
 						enableEmptySections={true}
 						dataSource={this.state.dataSource}
@@ -190,6 +238,14 @@ class Category extends Component {
   }
 
 	_onSwitchCategoryValue(value, rowID){
+		let categories = this.state.totalData.category.slice()
+		categories[rowID].value = true
+		let newData = this.state.totalData
+		newData.category = categories
+		this.setState({
+			totalData: newData
+		})
+
 		// let newCellData = this.state.rowData
 		// newCellData.value = value
 		// this.props.action(rowID, newCellData);
@@ -206,7 +262,7 @@ class Category extends Component {
                       borderWidth: 1, borderRadius: 8, padding: 10, marginBottom: 10, marginLeft: 10, marginRight: 10, backgroundColor: 'white'}}>
               <Text style={{flex:1, fontSize: 12, color: 'black'}}>{this.props.rowData.title}</Text>     
 							<Switch
-								onValueChange={(value) => this._onSwitchCategoryValue(value, this.props.rowID)}
+								onValueChange={(value) => this.props.onCategorySwitch(value, this.props.rowID)}
 								value={this.props.rowData.value} />
           </View>
       </TouchableHighlight>
@@ -279,4 +335,10 @@ class Category extends Component {
   }
 }
 
-export default FilterPage;
+const mapStateToProps = (state) => ({
+  filter_data: state.filter_data,
+})
+
+
+// export default FilterPage;
+export default connect(mapStateToProps)(FilterPage)
